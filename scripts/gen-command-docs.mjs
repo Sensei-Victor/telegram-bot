@@ -26,7 +26,7 @@ export const DEFAULT_DOCS_PATH = path.join(repoRoot, "docs", "commands.md");
  * Known allowlist-gated commands in src/bot.ts.
  * Fallback in case COMMANDS items do not explicitly declare allowlistGated.
  */
-const KNOWN_ALLOWLIST_GATED = new Set(["status", "contracts", "health", "preview", "categories"]);
+const KNOWN_ALLOWLIST_GATED = new Set(["menu", "status", "contracts", "health", "preview"]);
 
 /**
  * Returns whether a command is gated by ALLOWED_CHAT_IDS.
@@ -74,8 +74,9 @@ export function formatCommandDocs(commands = COMMANDS) {
     "",
     "## Access Controls",
     "",
-    "- **Operator-only**: Requires `OPERATOR_TELEGRAM_USER_ID` to be configured. Only the designated operator can execute these commands.",
+    "- **Operator-only**: Requires `OPERATOR_TELEGRAM_USER_ID` to be configured. Only the designated operator can execute these commands. They are omitted from the default Telegram menu and advertised only in that operator's private chat.",
     "- **Allowlist-gated**: Restricted to chats listed in `ALLOWED_CHAT_IDS`. If `ALLOWED_CHAT_IDS` is unset or empty, these commands are open to any chat.",
+    "- **Menu caching**: Telegram caches menus per chat. A menu entry is advertising only; every command is re-authorized by the operator and allowlist gates when received.",
     "",
   );
 

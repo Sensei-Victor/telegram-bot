@@ -36,14 +36,20 @@ const MENU = [
   "start",
   "help",
   "about",
+  "menu",
   "status",
+  "events",
   "audit",
   "contracts",
+  "filters",
   "health",
   "preview",
   "categories",
   "pause",
   "resume",
+  "follow",
+  "unfollow",
+  "follows",
 ];
 
 const OPERATOR_ONLY = ["audit", "pause", "resume"];
