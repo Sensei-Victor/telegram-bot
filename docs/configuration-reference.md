@@ -32,6 +32,7 @@ The `.env.example` file contains the base configuration. The bot uses strict env
 - `POLL_INTERVAL_MS`: How often to query the RPC for new events. Minimum is 5000ms. Testnet ledgers close roughly every 5 seconds.
 - `START_LOOKBACK_LEDGERS`: On a cold start (no cursor file), the number of recent ledgers to check for events. Defaults to 60. Limits unbounded backfilling.
 - `CURSOR_FILE`: Path to a persistent JSON file where the bot stores its last-seen ledger cursor.
+- `ACKNOWLEDGE_CURSOR_REPLAY`: Explicitly allow starting the bot when a rollback to an older cursor backup is detected. Defaults to `false` (halts startup to prevent unintended duplicate notifications).
 - `MAX_NOTIFICATIONS_PER_CYCLE`: Operational safeguard. The maximum number of notifications to dispatch in a single poll cycle. Defaults to 20. Prevents Telegram rate limiting if a massive burst of events occurs on-chain. Additional events are skipped (logged), but the cursor advances.
 
 ### Notification Filtering
@@ -77,9 +78,9 @@ Operators can inspect the current pending digest window via `/digestpreview [gro
 - **Restarts**: When `BROADCAST_CONFIRMATION_STORE_PATH` is set, identities survive restarts. Replayed or expired confirmations are rejected after a restart. Without it, pending confirmations are lost on restart and are rejected as unknown.
 
 ### Cursor Management and Restarts
-- **Behavior**: The cursor (the last ingested event's ledger sequence and ID) is persisted to `CURSOR_FILE` after events are dispatched.
+- **Behavior**: The cursor (the last ingested event's ledger sequence and ID) is persisted to `CURSOR_FILE` after events are dispatched along with a monotonic `recoveryGeneration`.
 - **Cold Start (No Cursor)**: The bot calculates a start ledger using the current network ledger minus `START_LOOKBACK_LEDGERS`. This prevents it from attempting to fetch all historical events.
-- **Warm Start (Existing Cursor)**: The bot reads `CURSOR_FILE`. It validates the format.
+- **Warm Start (Existing Cursor)**: The bot reads `CURSOR_FILE`. It validates the format and compares its recovery generation and target positions against backup metadata (`${CURSOR_FILE}.backup-meta.json` or `${CURSOR_FILE}.bak`). If an unacknowledged rollback to an older cursor backup is detected, startup aborts with `CursorRollbackError` unless `ACKNOWLEDGE_CURSOR_REPLAY=true` or replay was acknowledged during restore.
 - **Corrupt Cursor**: If the cursor file is missing, empty, or structurally invalid, it's treated as a Cold Start. If it contains data but is stale (far behind the network tip), the RPC's retention window might clip the query. The poller automatically resets to the lookback window if the cursor is too old.
 
 ### Malformed On-Chain Events

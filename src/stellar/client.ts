@@ -17,7 +17,9 @@ import { rpc } from "@stellar/stellar-sdk";
 import type { StellarConfig } from "../config.js";
 import {
   assertNetworkIdentity,
+  DEFAULT_MAX_RESPONSE_BYTES,
   RpcNetworkIdentityError,
+  wrapOversizedResponseError,
 } from "./rpc-guard.js";
 
 export class RpcPassphraseError extends Error {

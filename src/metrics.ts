@@ -26,6 +26,8 @@
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import type { Socket } from "node:net";
+import { DEFAULT_HEALTH_SHUTDOWN_GRACE_MS } from "./config.js";
 import {
   DEFAULT_SERVICE_LEVEL_WINDOW_SIZE,
   type ServiceLevelCompleteness,

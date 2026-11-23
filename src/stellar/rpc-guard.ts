@@ -13,6 +13,15 @@ import { resolveMaxBackoffMs } from "./client.js";
 /** Default ceiling on the number of events permitted in a single RPC response. */
 export const DEFAULT_MAX_EVENTS_PER_RESPONSE = 1_000;
 
+/** Default ceiling on the byte length of a single RPC response (4 MiB). */
+export const DEFAULT_MAX_RESPONSE_BYTES = 4_194_304;
+
+export function wrapOversizedResponseError(err: unknown, limit: number): unknown {
+  return err instanceof RpcResponseShapeError
+    ? err
+    : new RpcResponseShapeError("response-oversized", `response exceeded byte limit ${limit}`);
+}
+
 export type RpcNetworkIdentityProblem =
   | "not-an-object"
   | "malformed-passphrase"

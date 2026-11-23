@@ -218,7 +218,7 @@ checkout; the Docker image already includes the compiled CLI.
 ```bash
 npm run cursor -- backup
 npm run cursor -- backup --out /safe-storage/cursor-before-deploy.json
-npm run cursor -- restore --from /safe-storage/cursor-before-deploy.json --force
+npm run cursor -- restore --from /safe-storage/cursor-before-deploy.json --force --ack-replay
 npm run cursor -- history
 npm run cursor -- check --archive ./data/archive
 ```
@@ -229,8 +229,12 @@ bot from starting or writing concurrently, and atomically replaces the live
 file. Stop the bot before restoring. A live process holding the lock makes the
 command fail; stale locks are handled by the same PID check used at startup.
 Restoring an existing cursor requires `--force`; malformed or future-version
-files are always rejected. The command prints only paths, schema version, and
-target count, never opaque cursor contents.
+files are always rejected. Pass `--ack-replay` (or `--acknowledge-replay`) when
+restoring an older backup to explicitly acknowledge intended event replay. If an
+older backup is restored without acknowledgement, the poller detects the cursor
+rollback at startup using a monotonic recovery generation and aborts startup
+unless `ACKNOWLEDGE_CURSOR_REPLAY=true` is set. The command prints only paths,
+schema version, and target count, never opaque cursor contents.
 
 Cursor recovery actions (automatic floor rewinds, operator restores, and
 corrupt-file quarantines) append a bounded entry to `recoveryHistory` (at most

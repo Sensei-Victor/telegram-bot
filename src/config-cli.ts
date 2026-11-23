@@ -46,6 +46,7 @@ export const KNOWN_CONFIG_KEYS: ReadonlySet<string> = new Set([
   "POLL_INTERVAL_MS",
   "START_LOOKBACK_LEDGERS",
   "CURSOR_FILE",
+  "ACKNOWLEDGE_CURSOR_REPLAY",
   "INSTANCE_LOCK_FILE",
   "STATUS_FILE",
   "MAX_NOTIFICATIONS_PER_CYCLE",
@@ -196,6 +197,8 @@ function resolveSettingValue(
       return String(config.startLookbackLedgers);
     case "CURSOR_FILE":
       return config.cursorFile;
+    case "ACKNOWLEDGE_CURSOR_REPLAY":
+      return String(config.acknowledgeCursorReplay);
     case "INSTANCE_LOCK_FILE":
       return config.lockFile;
     case "STATUS_FILE":

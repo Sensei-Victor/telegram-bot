@@ -17,7 +17,6 @@
  */
 
 import { scValToNative, type rpc, type xdr } from "@stellar/stellar-sdk";
-import type { DecoderCapabilityReport } from "./decode.js";
 
 // ── Bounded Limits ───────────────────────────────────────────────────────────
 
@@ -898,6 +897,8 @@ export function decodeGenericEvent(
       topicSummary: "(none)",
       valueSummary: "void",
       summary,
+      status: "malformed_event",
+      reason,
       payload: {
         name: "generic",
         eventName: "unknown",
@@ -946,6 +947,8 @@ export function decodeGenericEvent(
       topicSummary,
       valueSummary,
       summary,
+      status: "malformed_event",
+      reason,
       payload: {
         name: "unknown",
         eventName,

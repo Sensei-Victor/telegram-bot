@@ -53,6 +53,7 @@ export interface CommandDeps {
    * Absent means that command reports zero matches.
    */
   follows?: FollowStore | undefined;
+  followStore?: FollowStore | undefined;
   /**
    * Optional read-only view of the current pending digest window backing
    * `/digestpreview`. Absent means `/digestpreview` reports that no pending

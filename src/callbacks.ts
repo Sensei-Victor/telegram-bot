@@ -18,7 +18,6 @@
 
 import { InlineKeyboard, type Bot, type Context } from "grammy";
 
-import { safeErrorMessage } from "./notifications/format.js";
 import {
   handleBroadcastCallback,
   handleConfirmationsCallback,

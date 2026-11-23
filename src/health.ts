@@ -693,7 +693,7 @@ function sendMethodNotAllowed(res: http.ServerResponse, allow: string): void {
   res.end(payload);
 }
 
-function sendUnauthorized(res: http.ServerResponse): void {
+function sendUnauthorized(res: http.ServerResponse, closing = false): void {
   res.writeHead(401, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
@@ -863,9 +863,43 @@ export function startHealthServer(deps: HealthDeps): HealthServer {
     port,
     beginShutdown,
     isShuttingDown,
-    close: () =>
-      new Promise((resolve, reject) => {
-        server.close((err) => (err ? reject(err) : resolve()));
-      }),
+    close: (options?: HealthCloseOptions) => {
+      if (closePromise !== null) return closePromise;
+      closing = true;
+      const graceMs = resolveShutdownGraceMs(
+        options?.gracePeriodMs,
+        config.healthShutdownGraceMs,
+      );
+
+      closePromise = new Promise((resolve, reject) => {
+        let timer: NodeJS.Timeout | null = null;
+        const clearTimer = (): void => {
+          if (timer !== null) {
+            clearTimeout(timer);
+            timer = null;
+          }
+        };
+
+        server.close((err) => {
+          clearTimer();
+          if (err) reject(err);
+          else resolve();
+        });
+
+        server.closeIdleConnections?.();
+
+        if (graceMs <= 0) {
+          forceDestroySockets();
+        } else if (sockets.size > 0) {
+          timer = setTimeout(() => {
+            timer = null;
+            forceDestroySockets();
+          }, graceMs);
+          timer.unref?.();
+        }
+      });
+
+      return closePromise;
+    },
   };
 }

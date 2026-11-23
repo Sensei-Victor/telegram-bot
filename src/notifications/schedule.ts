@@ -379,7 +379,7 @@ export class FileDigestDeliveryStore implements DigestDeliveryStore {
       this.maxBytes = Math.max(0, options.maxBytes ?? DEFAULT_DIGEST_DELIVERY_MAX_BYTES);
       this.now = options.now ?? Date.now;
     }
-    this.dir = path.dirname(this.filePath);
+    this.dir = dirname(this.filePath);
   }
 
   private async ensureDir(): Promise<void> {

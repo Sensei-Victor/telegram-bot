@@ -36,7 +36,7 @@ import { redactText } from "../redact.js";
 import { peekEventName } from "./peek.js";
 import { findDuplicateMapKey } from "./generic-decode.js";
 
-export { peekEventName, getGenericDecoderCapabilityReport };
+export { peekEventName };
 
 /** Which of the two Mimir contracts an event came from. */
 export type ContractSource = "market" | "squad";
@@ -1204,6 +1204,25 @@ export function listSupportedEventSchemas(
   }
 
   return schemas;
+}
+
+/**
+ * Generate a generic decoder capability report.
+ */
+export function getGenericDecoderCapabilityReport(contractId?: string): DecoderCapabilityReport {
+  return {
+    source: "generic",
+    ...(contractId ? { contractId } : {}),
+    version: "generic",
+    normalizedVersion: "generic",
+    supported: true,
+    decoderKind: "generic",
+    supportedVersions: ["generic"],
+    eventSchemas: listSupportedEventSchemas("generic"),
+    events: ["*"],
+    adminEvents: [],
+    wildcardSupport: true,
+  };
 }
 
 /**

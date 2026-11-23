@@ -377,6 +377,11 @@ export interface BotConfig extends StellarConfig {
   sendTimeoutMs?: number;
   /** When true, notifications sent to Telegram are formatted in preview mode. */
   channelPreviewMode: boolean;
+  /**
+   * Explicit acknowledgement of intended replay when rolling back to an older cursor backup.
+   * Required to start the poller if the loaded cursor is older than backup metadata.
+   */
+  acknowledgeCursorReplay: boolean;
   /** Show Telegram link previews on market notifications (LINK_PREVIEW_MARKET). */
   linkPreviewMarket: boolean;
   /** Show Telegram link previews on squad notifications (LINK_PREVIEW_SQUAD). */
@@ -468,6 +473,7 @@ const DEFAULTS = {
   // enough for a normal API round-trip on a slow link.
   telegramSendTimeoutMs: DEFAULT_TELEGRAM_SEND_TIMEOUT_MS,
   channelPreviewMode: false,
+  acknowledgeCursorReplay: false,
   linkPreviewMarket: false,
   linkPreviewSquad: false,
   logSampleMaxPerWindow: 3,
@@ -1074,6 +1080,7 @@ export function loadConfig(): BotConfig {
       0,
     ),
     channelPreviewMode: c.bool("CHANNEL_PREVIEW_MODE", DEFAULTS.channelPreviewMode),
+    acknowledgeCursorReplay: c.bool("ACKNOWLEDGE_CURSOR_REPLAY", DEFAULTS.acknowledgeCursorReplay),
     linkPreviewMarket: c.bool("LINK_PREVIEW_MARKET", DEFAULTS.linkPreviewMarket),
     linkPreviewSquad: c.bool("LINK_PREVIEW_SQUAD", DEFAULTS.linkPreviewSquad),
     logSampleMaxPerWindow: c.int(
@@ -1277,6 +1284,7 @@ export const CONFIG_KEYS: readonly ConfigKeySpec[] = [
   { key: "POLL_INTERVAL_MS", secret: false, hasBuiltInDefault: true },
   { key: "START_LOOKBACK_LEDGERS", secret: false, hasBuiltInDefault: true },
   { key: "CURSOR_FILE", secret: false, hasBuiltInDefault: true },
+  { key: "ACKNOWLEDGE_CURSOR_REPLAY", secret: false, hasBuiltInDefault: true },
   { key: "INSTANCE_LOCK_FILE", secret: false, hasBuiltInDefault: true },
   { key: "STATUS_FILE", secret: false, hasBuiltInDefault: true },
   { key: "MAX_NOTIFICATIONS_PER_CYCLE", secret: false, hasBuiltInDefault: true },
